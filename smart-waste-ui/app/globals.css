@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", "system-ui", "-apple-system", sans-serif;
+  
+  --color-brand-primary: #10b981;
+  --color-brand-secondary: #059669;
+  --color-brand-accent: #34d399;
+  
+  --color-bg-main: #f8fafc;
+  --color-bg-card: #ffffff;
+}
+
+@layer base {
+  body {
+    @apply bg-bg-main text-slate-900 antialiased;
+    font-family: var(--font-sans);
+  }
+}
+
+@layer utilities {
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-xl shadow-slate-200/50;
+  }
+  
+  .glass-sidebar {
+    @apply bg-slate-50/50 backdrop-blur-lg border-r border-slate-200/50;
+  }
+  
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-500;
+  }
+  
+  .btn-primary {
+    @apply bg-brand-primary text-white font-semibold px-6 py-2 rounded-xl 
+           hover:bg-brand-secondary transition-all duration-300 shadow-lg shadow-emerald-200
+           active:scale-95;
+  }
+
+  .stat-card-gradient {
+    @apply bg-gradient-to-br from-white to-slate-50;
+  }
+}
+
+/* Custom Scrollbar for modern look */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-200 rounded-full hover:bg-slate-300;
+}
