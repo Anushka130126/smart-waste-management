@@ -10,7 +10,7 @@ export default function Monitoring() {
 
   const fetchBins = async () => {
     try {
-      const resp = await fetch('http://localhost:8000/api/bins');
+      const resp = await fetch('http://127.0.0.1:8000/api/bins');
       const data = await resp.json();
       if (data.data) setBins(data.data);
     } catch (e) {
@@ -55,7 +55,7 @@ export default function Monitoring() {
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
           <AnimatePresence mode="popLayout">
             {filteredBins.map(bin => (
-              <motion.div 
+              <motion.div
                 key={bin.bin_id}
                 layout
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -78,9 +78,9 @@ function FilterButton({ label, active, onClick, color }) {
     amber: 'bg-amber-500 text-white shadow-lg shadow-amber-200',
     default: 'bg-emerald-600 text-white shadow-lg shadow-emerald-200'
   };
-  
+
   return (
-    <button 
+    <button
       onClick={onClick}
       className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all ${active ? (activeStyles[color] || activeStyles.default) : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'}`}
     >
@@ -91,7 +91,7 @@ function FilterButton({ label, active, onClick, color }) {
 
 function SensorCard({ bin }) {
   const isCritical = bin.status === 'FIRE_ALERT' || bin.fill_percentage >= 90;
-  
+
   return (
     <div className={`bg-white p-6 rounded-[2rem] border border-slate-200/60 shadow-sm relative overflow-hidden group transition-all duration-500 ${isCritical ? 'ring-2 ring-rose-300 ring-offset-4 ring-offset-slate-50' : ''}`}>
       {isCritical && (
@@ -117,7 +117,7 @@ function SensorCard({ bin }) {
             <span className={`text-xl font-black ${bin.fill_percentage >= 90 ? 'text-rose-600' : 'text-slate-800'}`}>{bin.fill_percentage}%</span>
           </div>
           <div className="h-2.5 w-full bg-slate-100 rounded-full overflow-hidden">
-            <motion.div 
+            <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${bin.fill_percentage}%` }}
               className={`h-full transition-all duration-1000 ${bin.fill_percentage >= 90 ? 'bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.5)]' : (bin.fill_percentage >= 70 ? 'bg-amber-500' : 'bg-emerald-500 shadow-[0_4px_10px_rgba(16,185,129,0.3)]')}`}

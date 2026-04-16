@@ -9,8 +9,6 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer 
 } from 'recharts';
 
-// Removed STATIC_TREND, all data is pulled live from API.
-
 export default function AdminDashboard() {
   const [bins, setBins] = useState([]);
   const [alerts, setAlerts] = useState([]);
@@ -22,9 +20,9 @@ export default function AdminDashboard() {
   const fetchData = async () => {
     try {
       const [binsResp, alertsResp, fleetResp] = await Promise.all([
-        fetch('http://localhost:8000/api/bins'),
-        fetch('http://localhost:8000/api/alerts'),
-        fetch('http://localhost:8000/api/fleet')
+        fetch('http://127.0.0.1:8000/api/bins'),
+        fetch('http://127.0.0.1:8000/api/alerts'),
+        fetch('http://127.0.0.1:8000/api/fleet')
       ]);
       const [binsData, alertsData, fleetData] = await Promise.all([binsResp.json(), alertsResp.json(), fleetResp.json()]);
       if (binsData.data) setBins(binsData.data.sort((a,b) => a.bin_id.localeCompare(b.bin_id)));
@@ -44,7 +42,7 @@ export default function AdminDashboard() {
   }, []);
 
   const handleExport = () => {
-    window.open(`http://localhost:8000/api/reports/export?scope=${exportScope}`, '_blank');
+    window.open(`http://127.0.0.1:8000/api/reports/export?scope=${exportScope}`, '_blank');
     setShowExportModal(false);
   };
 
@@ -53,38 +51,38 @@ export default function AdminDashboard() {
   const onRouteCount = fleet.filter(f => f.status === 'On Route').length;
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       className="space-y-8"
     >
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard 
-          title="Network Health" 
-          value={loading ? "..." : "Optimal"} 
+        <StatCard
+          title="Network Health"
+          value={loading ? "..." : "Optimal"}
           sub="99% Database Sync"
-          icon={<ShieldCheck size={22} className="text-emerald-500" />} 
+          icon={<ShieldCheck size={22} className="text-emerald-500" />}
           trend={+1.2}
         />
-        <StatCard 
-          title="Monitored Bins" 
-          value={loading ? "..." : activeBinsRes} 
+        <StatCard
+          title="Monitored Bins"
+          value={loading ? "..." : activeBinsRes}
           sub="Live Telemetry Nodes"
-          icon={<Zap size={22} className="text-blue-500" />} 
+          icon={<Zap size={22} className="text-blue-500" />}
           trend={+0.0}
         />
-        <StatCard 
-          title="Operational Trucks" 
-          value={loading ? "..." : onRouteCount} 
+        <StatCard
+          title="Operational Trucks"
+          value={loading ? "..." : onRouteCount}
           sub="Live From Scheduler"
-          icon={<Truck size={22} className="text-indigo-500" />} 
+          icon={<Truck size={22} className="text-indigo-500" />}
           trend={+onRouteCount > 0 ? 100 : 0}
         />
-        <StatCard 
-          title="Critical Tasks" 
-          value={loading ? "..." : criticalCount} 
+        <StatCard
+          title="Critical Tasks"
+          value={loading ? "..." : criticalCount}
           sub="High Priority Alerts"
-          icon={<AlertTriangle size={22} className="text-rose-500" />} 
+          icon={<AlertTriangle size={22} className="text-rose-500" />}
           trend={+criticalCount > 0 ? 100 : 0}
         />
       </div>
@@ -109,7 +107,7 @@ export default function AdminDashboard() {
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                 <XAxis dataKey="bin_id" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 11, fontWeight: 'bold'}} />
                 <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 11, fontWeight: 'bold'}} domain={[0, 100]} />
-                <Tooltip 
+                <Tooltip
                   contentStyle={{ borderRadius: '20px', border: 'none', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)' }}
                   itemStyle={{ fontWeight: 'bold', fontSize: '12px' }}
                   labelStyle={{ color: '#94a3b8', fontWeight: 'bold', fontSize: '10px' }}
@@ -124,14 +122,14 @@ export default function AdminDashboard() {
           <div className="absolute top-0 right-0 p-10 opacity-10 pointer-events-none group-hover:scale-110 transition-transform duration-1000">
              <Activity size={140} className="text-emerald-500" />
           </div>
-          
+
           <h2 className="text-xl font-bold text-white mb-6 relative z-10 flex items-center justify-between">
             <span>Live Feed</span>
             <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-ping"></span>
           </h2>
           <div className="space-y-4 relative z-10 font-mono h-[280px] overflow-y-auto pr-2 custom-scrollbar">
             {alerts.length > 0 ? alerts.map(alert => (
-              <IngestionItem 
+              <IngestionItem
                 key={alert.id}
                 bin={alert.bin_id}
                 status={alert.type}
@@ -146,7 +144,7 @@ export default function AdminDashboard() {
           </div>
 
           <div className="mt-8 pt-6 border-t border-white/10 relative z-10">
-            <button 
+            <button
               onClick={() => window.location.href = '/monitoring'}
               className="w-full bg-emerald-600 text-white rounded-2xl py-4 font-bold hover:bg-emerald-500 transition-all shadow-lg flex items-center justify-center space-x-2"
             >
@@ -165,22 +163,22 @@ export default function AdminDashboard() {
            </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <OpCard 
-            title="Dynamic Optimizer" 
+          <OpCard
+            title="Dynamic Optimizer"
             desc="Run AI recalculation for current full bins across Dehradun sector."
             action="Calculate Route"
             variant="emerald"
             onClick={() => window.location.href='/optimization'}
           />
-          <OpCard 
-            title="Fleet Manager" 
+          <OpCard
+            title="Fleet Manager"
             desc="Deploy trucks and manage driver assignments."
             action="Open Scheduler"
             variant="blue"
             onClick={() => window.location.href='/scheduling'}
           />
-          <OpCard 
-            title="System Reporting" 
+          <OpCard
+            title="System Reporting"
             desc="Generate persistent CSV archives for audit and billing logs."
             action="Generate Report"
             variant="slate"
@@ -193,7 +191,7 @@ export default function AdminDashboard() {
       <AnimatePresence>
         {showExportModal && (
           <div className="fixed inset-0 z-[60] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-md">
-            <motion.div 
+            <motion.div
                initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 20, opacity: 0 }}
                className="bg-white rounded-[3rem] p-10 w-full max-w-md shadow-2xl text-center"
             >
@@ -202,16 +200,16 @@ export default function AdminDashboard() {
               </div>
               <h3 className="text-2xl font-black text-slate-800 mb-2">Export Data Archive</h3>
               <p className="text-slate-500 font-medium mb-10">Select the scope of the telemetry report to generate.</p>
-              
+
               <div className="space-y-4 mb-10">
-                <button 
+                <button
                    onClick={() => setExportScope('today')}
                    className={`w-full p-5 rounded-[1.5rem] border-2 transition-all text-left flex items-center justify-between ${exportScope === 'today' ? 'border-emerald-600 bg-emerald-50/50' : 'border-slate-100 bg-slate-50'}`}
                 >
                   <span className="font-bold">Today's History</span>
                   {exportScope === 'today' && <CheckCircle size={20} className="text-emerald-600" />}
                 </button>
-                <button 
+                <button
                    onClick={() => setExportScope('all')}
                    className={`w-full p-5 rounded-[1.5rem] border-2 transition-all text-left flex items-center justify-between ${exportScope === 'all' ? 'border-emerald-600 bg-emerald-50/50' : 'border-slate-100 bg-slate-50'}`}
                 >
@@ -271,7 +269,7 @@ function OpCard({ title, desc, action, variant, onClick }) {
     blue: "bg-blue-600 text-white shadow-blue-100 hover:bg-blue-700",
     slate: "bg-slate-900 text-white shadow-slate-200 hover:bg-slate-800"
   };
-  
+
   return (
     <div className="p-8 rounded-[2rem] border border-slate-100 bg-slate-50/30 flex flex-col justify-between group transition-all">
       <div>

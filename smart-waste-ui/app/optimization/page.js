@@ -23,7 +23,7 @@ export default function Optimization() {
     e.preventDefault();
     setSubmittingDispatch(true);
     try {
-      await fetch('http://localhost:8000/api/fleet', {
+      await fetch('http://127.0.0.1:8000/api/fleet', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -45,7 +45,7 @@ export default function Optimization() {
   const handleSensitivityUpdate = async (e) => {
     e.preventDefault();
     try {
-      await fetch('http://localhost:8000/api/settings/sensitivity', {
+      await fetch('http://127.0.0.1:8000/api/settings/sensitivity', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sensitivity })
@@ -58,7 +58,7 @@ export default function Optimization() {
   const triggerOptimization = async () => {
     setOptimizing(true);
     try {
-      const resp = await fetch('http://localhost:8000/api/routes/optimize');
+      const resp = await fetch('http://127.0.0.1:8000/api/routes/optimize');
       const data = await resp.json();
       if (data.optimized_route) {
         setRoute(data.optimized_route);
@@ -74,7 +74,7 @@ export default function Optimization() {
   useEffect(() => {
     const fetchSensitivity = async () => {
       try {
-        const resp = await fetch('http://localhost:8000/api/settings/sensitivity');
+        const resp = await fetch('http://127.0.0.1:8000/api/settings/sensitivity');
         const data = await resp.json();
         if (data.threshold !== undefined) setSensitivity(data.threshold);
       } catch (e) {}
@@ -90,7 +90,7 @@ export default function Optimization() {
           <h1 className="text-3xl font-black text-slate-800">Dynamic Routing</h1>
           <p className="text-slate-400 font-medium mt-1">Shortest-path generation using the Nearest Neighbor algorithm.</p>
         </div>
-        <button 
+        <button
           onClick={triggerOptimization}
           disabled={optimizing}
           className="px-8 py-3 bg-slate-900 text-white rounded-2xl font-bold hover:bg-slate-800 transition-all flex items-center shadow-xl shadow-slate-200 active:scale-95 disabled:opacity-50"
@@ -107,7 +107,7 @@ export default function Optimization() {
             <h2 className="text-xl font-bold text-slate-800 mb-8 flex items-center">
               <Navigation className="mr-3 text-emerald-500" /> Planned Path
             </h2>
-            
+
             <div className="flex-1 space-y-0 relative">
               {/* Central connection line */}
               <div className="absolute left-[19px] top-6 bottom-6 w-0.5 bg-slate-100 z-0"></div>
@@ -119,7 +119,7 @@ export default function Optimization() {
                 </div>
               ) : route.length > 0 ? (
                 route.map((node, i) => (
-                  <motion.div 
+                  <motion.div
                     key={i}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -152,7 +152,7 @@ export default function Optimization() {
             </div>
 
             {route.length > 0 && (
-              <button 
+              <button
                 onClick={() => setShowDispatchModal(true)}
                 className="w-full mt-8 py-4 bg-emerald-600 text-white rounded-2xl font-bold hover:bg-emerald-500 shadow-lg shadow-emerald-100 transition-all flex items-center justify-center space-x-2"
               >
@@ -168,11 +168,11 @@ export default function Optimization() {
           <div className="flex-1 bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden relative">
             <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:24px_24px] opacity-40"></div>
             <div className="absolute inset-0 bg-gradient-to-br from-transparent to-slate-50 opacity-40"></div>
-            
+
             <div className="absolute inset-0 z-0">
               <RouteMap route={route} />
             </div>
-            
+
             {route.length > 0 && (
               <div className="absolute top-6 right-6 z-10 bg-white/90 backdrop-blur-md p-4 rounded-3xl shadow-xl flex space-x-4 border border-white">
                 <Stat label="Total Stops" value={route.length} />
@@ -180,7 +180,7 @@ export default function Optimization() {
               </div>
             )}
           </div>
-          
+
           <div className="bg-slate-900 p-8 rounded-[2.5rem] text-white flex justify-between items-center group overflow-hidden relative">
             <div className="absolute top-0 right-0 p-8 transform translate-x-10 -translate-y-10 group-hover:translate-x-0 group-hover:translate-y-0 transition-all duration-700 opacity-20">
               <Activity size={120} className="text-emerald-500" />
@@ -189,7 +189,7 @@ export default function Optimization() {
               <h4 className="font-bold text-lg mb-1">Algorithm Sensitivity</h4>
               <p className="text-slate-400 text-sm">Nearest Neighbor prioritization active with ΔR threshold of {sensitivity}.</p>
             </div>
-            <button 
+            <button
               onClick={() => setShowSensitivityModal(true)}
               className="relative z-10 px-6 py-3 bg-white/10 hover:bg-white text-white hover:text-slate-900 rounded-2xl font-bold transition-all flex items-center transform group-hover:scale-105"
             >
@@ -204,7 +204,7 @@ export default function Optimization() {
       <AnimatePresence>
         {showDispatchModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/40 backdrop-blur-sm">
-            <motion.div 
+            <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
@@ -218,7 +218,7 @@ export default function Optimization() {
               <form onSubmit={handleDispatch} className="p-8 space-y-6">
                 <div>
                   <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Driver Name</label>
-                  <input 
+                  <input
                     value={dispatchData.driver_name}
                     onChange={(e) => setDispatchData({...dispatchData, driver_name: e.target.value})}
                     required
@@ -228,7 +228,7 @@ export default function Optimization() {
                 </div>
                 <div>
                   <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Truck ID</label>
-                  <input 
+                  <input
                     value={dispatchData.truck_id}
                     onChange={(e) => setDispatchData({...dispatchData, truck_id: e.target.value})}
                     required
@@ -252,7 +252,7 @@ export default function Optimization() {
       <AnimatePresence>
         {showSensitivityModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/40 backdrop-blur-sm">
-            <motion.div 
+            <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
@@ -266,7 +266,7 @@ export default function Optimization() {
               <form onSubmit={handleSensitivityUpdate} className="p-8 space-y-6">
                 <div>
                   <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">ΔR Threshold</label>
-                  <input 
+                  <input
                     type="number"
                     step="0.01"
                     min="0.01"

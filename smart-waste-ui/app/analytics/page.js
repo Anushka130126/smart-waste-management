@@ -14,14 +14,14 @@ export default function AnalyticsDashboard() {
     const fetchData = async () => {
       try {
         const [binsResp, alertsResp] = await Promise.all([
-          fetch('http://localhost:8000/api/bins'),
-          fetch('http://localhost:8000/api/alerts')
+          fetch('http://127.0.0.1:8000/api/bins'),
+          fetch('http://127.0.0.1:8000/api/alerts')
         ]);
         const [binsData, alertsData] = await Promise.all([binsResp.json(), alertsResp.json()]);
         if (binsData.data) setBins(binsData.data.sort((a,b) => a.bin_id.localeCompare(b.bin_id)));
         if (alertsData.data) setAlerts(alertsData.data);
       } catch (e) {
-        // quiet fail 
+        // quiet fail
       }
     };
     fetchData();
@@ -36,7 +36,7 @@ export default function AnalyticsDashboard() {
 
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="space-y-8"
@@ -51,8 +51,8 @@ export default function AnalyticsDashboard() {
             <Filter size={18} />
             <span>Filter</span>
           </button>
-          <button 
-            onClick={() => window.open('http://localhost:8000/api/reports/export?scope=all', '_blank')}
+          <button
+            onClick={() => window.open('http://127.0.0.1:8000/api/reports/export?scope=all', '_blank')}
             className="flex items-center space-x-2 px-4 py-2 bg-emerald-600 text-white rounded-xl text-sm font-bold hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-100"
           >
             <Download size={18} />
@@ -73,13 +73,13 @@ export default function AnalyticsDashboard() {
         {/* Fill Distribution */}
         <div className="bg-white p-8 rounded-3xl border border-slate-200/60 shadow-sm">
           <h2 className="text-xl font-bold text-slate-800 mb-6 font-sans">Fill Distribution</h2>
-          <div className="h-[350px] w-full">
+          <div className="h-[350px] w-full min-w-[0px] min-h-[0px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={bins}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                 <XAxis dataKey="bin_id" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 10}} />
                 <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} domain={[0, 100]} />
-                <Tooltip 
+                <Tooltip
                   cursor={{fill: '#f8fafc'}}
                   contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}
                   itemStyle={{ fontWeight: 'bold' }}
@@ -98,13 +98,13 @@ export default function AnalyticsDashboard() {
         {/* Temperature Trends */}
         <div className="bg-white p-8 rounded-3xl border border-slate-200/60 shadow-sm">
           <h2 className="text-xl font-bold text-slate-800 mb-6">Thermal Variance</h2>
-          <div className="h-[350px] w-full">
+          <div className="h-[350px] w-full min-w-[0px] min-h-[0px]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={bins}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                 <XAxis dataKey="bin_id" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 10}} />
                 <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} />
-                <Tooltip 
+                <Tooltip
                   contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}
                   itemStyle={{ fontWeight: 'bold' }}
                   labelStyle={{ color: '#94a3b8', fontWeight: 'bold', fontSize: '10px' }}

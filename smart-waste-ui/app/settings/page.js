@@ -4,21 +4,30 @@ import { motion } from 'framer-motion';
 import { Settings, Bell, Shield, Save, RefreshCw, Server, AlertCircle, Info } from 'lucide-react';
 
 export default function SettingsPage() {
-  const [settings, setSettings] = useState({
+  const defaultSettings = {
     thresholds: { fill_critical: 80, temp_critical: 75, battery_warning: 20 },
-    system_info: { sector: "Loading...", admin: "Loading...", version: "1.0.0" }
-  });
+    system_info: { sector: "Dehradun Sector", admin: "Devesh Khurana", version: "1.0.0" }
+  };
+
+  const [settings, setSettings] = useState(defaultSettings);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const resp = await fetch('http://localhost:8000/api/settings');
+        const resp = await fetch('http://127.0.0.1:8000/api/settings');
         const data = await resp.json();
-        if (data) setSettings(data);
+
+        // Deep merge the database settings with our safe defaults to prevent crashes
+        if (data && Object.keys(data).length > 0) {
+          setSettings({
+            thresholds: data.thresholds || defaultSettings.thresholds,
+            system_info: data.system_info || defaultSettings.system_info
+          });
+        }
       } catch (e) {
-        console.error("Failed to load settings.");
+        console.error("Failed to load settings, using defaults.");
       } finally {
         setLoading(false);
       }
@@ -28,15 +37,16 @@ export default function SettingsPage() {
 
   const handleUpdate = async (key, value) => {
     setSaving(true);
+    // Optimistically update UI
+    setSettings(prev => ({ ...prev, [key]: value }));
     try {
-      await fetch(`http://localhost:8000/api/settings/${key}`, {
+      await fetch(`http://127.0.0.1:8000/api/settings/${key}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ value })
       });
-      setSettings(prev => ({ ...prev, [key]: value }));
     } catch (e) {
-      alert("Failed to save settings.");
+      alert("Failed to save settings to database.");
     } finally {
       setSaving(false);
     }
@@ -49,7 +59,7 @@ export default function SettingsPage() {
   );
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, scale: 0.98 }}
       animate={{ opacity: 1, scale: 1 }}
       className="max-w-4xl space-y-8"
@@ -72,22 +82,22 @@ export default function SettingsPage() {
             <div className="p-2 bg-rose-50 text-rose-500 rounded-lg"><Bell size={20}/></div>
             <h2 className="text-xl font-bold text-slate-800">Alert Thresholds</h2>
           </div>
-          
+
           <div className="space-y-4">
-            <SettingInput 
-              label="Critical Fill Level (%)" 
-              value={settings.thresholds.fill_critical} 
-              onChange={(v) => handleUpdate('thresholds', {...settings.thresholds, fill_critical: parseInt(v)})} 
+            <SettingInput
+              label="Critical Fill Level (%)"
+              value={settings?.thresholds?.fill_critical || 80}
+              onChange={(v) => handleUpdate('thresholds', {...settings.thresholds, fill_critical: parseInt(v) || 0})}
             />
-            <SettingInput 
-              label="Critical Temperature (°C)" 
-              value={settings.thresholds.temp_critical} 
-              onChange={(v) => handleUpdate('thresholds', {...settings.thresholds, temp_critical: parseInt(v)})} 
+            <SettingInput
+              label="Critical Temperature (°C)"
+              value={settings?.thresholds?.temp_critical || 75}
+              onChange={(v) => handleUpdate('thresholds', {...settings.thresholds, temp_critical: parseInt(v) || 0})}
             />
-            <SettingInput 
-              label="Battery Warning (%)" 
-              value={settings.thresholds.battery_warning} 
-              onChange={(v) => handleUpdate('thresholds', {...settings.thresholds, battery_warning: parseInt(v)})} 
+            <SettingInput
+              label="Battery Warning (%)"
+              value={settings?.thresholds?.battery_warning || 20}
+              onChange={(v) => handleUpdate('thresholds', {...settings.thresholds, battery_warning: parseInt(v) || 0})}
             />
           </div>
         </section>
@@ -98,22 +108,22 @@ export default function SettingsPage() {
             <div className="p-2 bg-blue-50 text-blue-500 rounded-lg"><Server size={20}/></div>
             <h2 className="text-xl font-bold text-slate-800">Metadata</h2>
           </div>
-          
+
           <div className="space-y-4">
-            <SettingInput 
-              label="Sector Location" 
-              value={settings.system_info.sector} 
-              onChange={(v) => handleUpdate('system_info', {...settings.system_info, sector: v})} 
+            <SettingInput
+              label="Sector Location"
+              value={settings?.system_info?.sector || ""}
+              onChange={(v) => handleUpdate('system_info', {...settings.system_info, sector: v})}
             />
-            <SettingInput 
-              label="Admin Name" 
-              value={settings.system_info.admin} 
-              onChange={(v) => handleUpdate('system_info', {...settings.system_info, admin: v})} 
+            <SettingInput
+              label="Admin Name"
+              value={settings?.system_info?.admin || ""}
+              onChange={(v) => handleUpdate('system_info', {...settings.system_info, admin: v})}
             />
-            <SettingInput 
-              label="System Version" 
-              value={settings.system_info.version} 
-              onChange={(v) => handleUpdate('system_info', {...settings.system_info, version: v})} 
+            <SettingInput
+              label="System Version"
+              value={settings?.system_info?.version || "1.0.0"}
+              onChange={(v) => handleUpdate('system_info', {...settings.system_info, version: v})}
               disabled
             />
           </div>
@@ -128,7 +138,7 @@ export default function SettingsPage() {
             <p className="text-slate-400 text-sm">Changes are applied immediately across all IoT listeners.</p>
           </div>
         </div>
-        <button 
+        <button
           onClick={() => window.location.reload()}
           className="px-6 py-3 bg-white text-slate-900 rounded-2xl font-bold hover:bg-slate-100 transition-all flex items-center"
         >
@@ -143,7 +153,7 @@ function SettingInput({ label, value, onChange, disabled }) {
   return (
     <div>
       <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">{label}</label>
-      <input 
+      <input
         type={typeof value === 'number' ? 'number' : 'text'}
         value={value}
         onChange={(e) => onChange(e.target.value)}

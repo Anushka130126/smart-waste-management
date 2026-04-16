@@ -15,7 +15,7 @@ export default function RootLayout({ children }) {
 
   const fetchAlerts = async () => {
     try {
-      const resp = await fetch('http://localhost:8000/api/alerts');
+      const resp = await fetch('http://127.0.0.1:8000/api/alerts');
       const data = await resp.json();
       if (data.data) setAlerts(data.data);
     } catch (e) { /* ignore to prevent next.js dev overlay */ }
@@ -52,7 +52,7 @@ export default function RootLayout({ children }) {
             <NavItem href="/scheduling" icon={<Calendar size={20} />} label="Fleet Schedule" active={pathname === "/scheduling"} />
             <NavItem href="/optimization" icon={<Route size={20} />} label="Dynamic Routing" active={pathname === "/optimization"} />
             <NavItem href="/analytics" icon={<BarChart3 size={20} />} label="System Analytics" active={pathname === "/analytics"} />
-            
+
             <div className="px-4 py-2 mt-8 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Preferences</div>
             <NavItem href="/settings" icon={<Settings size={20} />} label="Settings" active={pathname === "/settings"} />
           </nav>
@@ -76,9 +76,9 @@ export default function RootLayout({ children }) {
               <h2 className="text-sm font-semibold text-slate-500">System Live</h2>
               <p className="text-xs text-slate-400">{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
             </div>
-            
+
             <div className="flex items-center space-x-4 relative">
-              <button 
+              <button
                 onClick={() => setShowNotifs(!showNotifs)}
                 className={`p-2.5 rounded-full bg-white border border-slate-200 transition-all relative ${showNotifs ? 'text-emerald-600 ring-4 ring-emerald-50' : 'text-slate-500 hover:text-emerald-600'}`}
               >
@@ -92,7 +92,7 @@ export default function RootLayout({ children }) {
 
               <AnimatePresence>
                 {showNotifs && (
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, scale: 0.95, y: 10 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, y: 10 }}
@@ -100,11 +100,11 @@ export default function RootLayout({ children }) {
                   >
                     <div className="p-6 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
                       <h3 className="font-bold text-slate-800">Recent Alerts</h3>
-                      <button 
+                      <button
                         onClick={async () => {
                           setAlerts(prev => prev.map(a => ({ ...a, is_read: true })));
                           try {
-                            await fetch('http://localhost:8000/api/alerts/mark-read', { method: 'POST' });
+                            await fetch('http://127.0.0.1:8000/api/alerts/mark-read', { method: 'POST' });
                             fetchAlerts();
                           } catch (e) { console.error("Mark read failed"); }
                         }}
@@ -152,12 +152,12 @@ export default function RootLayout({ children }) {
 
 function NavItem({ href, icon, label, active }) {
   return (
-    <Link 
-      href={href} 
+    <Link
+      href={href}
       className={`
         flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-300
-        ${active 
-          ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-200 scale-[1.02]' 
+        ${active
+          ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-200 scale-[1.02]'
           : 'text-slate-500 hover:bg-emerald-50 hover:text-emerald-700'
         }
       `}
